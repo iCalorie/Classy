@@ -275,7 +275,21 @@
 
     CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
     if (fontName) {
-        *font = [UIFont fontWithName:fontName size:fontSizeValue];
+        if ([fontName isEqualToString:@"UIFontTextStyleHeadline"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+        } else if ([fontName isEqualToString:@"UIFontTextStyleSubheadline"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+        } else if ([fontName isEqualToString:@"UIFontTextStyleBody"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+        } else if ([fontName isEqualToString:@"UIFontTextStyleFootnote"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        } else if ([fontName isEqualToString:@"UIFontTextStyleCaption1"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+        } else if ([fontName isEqualToString:@"UIFontTextStyleCaption2"]) {
+            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+        } else {
+            *font = [UIFont fontWithName:fontName size:fontSizeValue];
+        }
     } else {
         *font = [UIFont systemFontOfSize:fontSizeValue];
     }
