@@ -389,8 +389,9 @@ NSArray *ClassGetSubclasses(Class parentClass) {
         @"highlighted"  : @(UIControlStateHighlighted),
         @"disabled"     : @(UIControlStateDisabled),
         @"selected"     : @(UIControlStateSelected),
-        @"normal|highlighted"  : @(UIControlStateNormal|UIControlStateHighlighted),
-        @"selected|highlighted"  : @(UIControlStateNormal|UIControlStateSelected),
+        @"normalHighlighted"  : @( UIControlStateNormal|UIControlStateHighlighted),
+        @"selectedHighlighted"  : @(UIControlStateSelected|UIControlStateHighlighted),
+        @"all"  : @( UIControlStateNormal|UIControlStateHighlighted|UIControlStateSelected|UIControlStateDisabled),
     };
 
     NSDictionary *textAlignmentMap = @{
