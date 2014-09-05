@@ -23,7 +23,6 @@ NSInteger const CASParseErrorFileContents = 2;
 
 @property (nonatomic, strong) CASLexer *lexer;
 @property (nonatomic, strong, readwrite) NSArray *styleNodes;
-@property (nonatomic, strong) NSMutableDictionary *styleVars;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, copy) NSString *filePath;
 
