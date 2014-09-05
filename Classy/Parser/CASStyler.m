@@ -140,7 +140,13 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     
     CASParser *parser = [CASParser parserFromFilePath:filePath variables:self.variables error:error];
     NSArray *styleNodes = parser.styleNodes;
-    
+
+    if (!_styleVars) {
+        _styleVars = [NSMutableDictionary dictionary];
+    }
+
+    [_styleVars addEntriesFromDictionary:parser.styleVars];
+
     if (self.watchFilePath) {
         for (dispatch_source_t source in self.fileWatchers) {
             dispatch_source_cancel(source);

@@ -17,6 +17,11 @@
  */
 + (instancetype)defaultStyler;
 
+/**
+*  Presenting all the styleVars to be used in code.
+*/
+@property(nonatomic, strong, readonly) NSMutableDictionary *styleVars;
+
 @property (nonatomic, copy) NSDictionary *variables;
 
 /**

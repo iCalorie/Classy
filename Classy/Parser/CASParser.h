@@ -17,6 +17,8 @@ extern NSInteger const CASParseErrorFileContents;
 @property (nonatomic, strong, readonly) NSArray *styleNodes;
 @property (nonatomic, strong, readonly) NSSet *importedFileNames;
 
+@property (nonatomic, strong) NSMutableDictionary *styleVars;
+
 /**
  *  Create a parser with the given file path
  */
