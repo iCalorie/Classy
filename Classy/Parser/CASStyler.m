@@ -16,7 +16,6 @@
 #import "NSString+CASAdditions.h"
 #import "CASTextAttributes.h"
 #import "CASInvocation.h"
-#import "SUButton.h"
 #import <objc/runtime.h>
 
 // http://www.cocoawithlove.com/2010/01/getting-subclasses-of-objective-c-class.html
@@ -546,7 +545,7 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     [objectClassDescriptor setArgumentDescriptors:@[imageArg, stateArg] setter:@selector(setImage:forState:) forPropertyKey:@"image"];
     
     // SUButton
-    objectClassDescriptor = [self objectClassDescriptorForClass:SUButton.class];
+    objectClassDescriptor = [self objectClassDescriptorForClass:NSClassFromString(@"SUButton")];
     [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBackgroundColor:forState:) forPropertyKey:@"backgroundColor"];
 
     // UIBarButtonItem
