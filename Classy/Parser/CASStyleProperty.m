@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 cloudling. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import "CASStyleProperty.h"
 #import "NSString+CASAdditions.h"
 #import "CASExpressionSolver.h"
@@ -18,6 +19,8 @@
 @property (nonatomic, strong, readwrite) CASToken *nameToken;
 @property (nonatomic, strong, readwrite) NSArray *valueTokens;
 
+@property(nonatomic) BOOL hasFontWeightSupport;
+@property(nonatomic) BOOL isIOS9;
 @end
 
 @implementation CASStyleProperty {
@@ -32,6 +35,15 @@
 
     self.nameToken = nameToken;
     self.valueTokens = valueTokens;
+
+    self.hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
+
+    NSProcessInfo *processInfo = [NSProcessInfo new];
+    NSOperatingSystemVersion version9;
+    version9.majorVersion = 9;
+    version9.minorVersion = 0;
+
+    self.isIOS9 = [processInfo isOperatingSystemAtLeastVersion:version9];
 
     return self;
 }
@@ -166,8 +178,8 @@
     }
 
     NSString *value = [self valueOfTokenType:CASTokenTypeRef]
-        ?: [self valueOfTokenType:CASTokenTypeSelector]
-        ?: [self valueOfTokenType:CASTokenTypeString];
+            ?: [self valueOfTokenType:CASTokenTypeSelector]
+                    ?: [self valueOfTokenType:CASTokenTypeString];
 
     if ([value isEqualToString:@"rgb"] || [value isEqualToString:@"rgba"] || [value isEqualToString:@"hsl"] || [value isEqualToString:@"hsla"]) {
         NSArray *unitTokens = [self consecutiveValuesOfTokenType:CASTokenTypeUnit];
@@ -202,8 +214,8 @@
 
 - (BOOL)transformValuesToNSString:(NSString **)string {
     NSString *value = [self valueOfTokenType:CASTokenTypeString]
-        ?: [self valueOfTokenType:CASTokenTypeRef]
-        ?: [self valueOfTokenType:CASTokenTypeSelector];
+            ?: [self valueOfTokenType:CASTokenTypeRef]
+                    ?: [self valueOfTokenType:CASTokenTypeSelector];
     if (value) {
         *string = value;
         return YES;
@@ -217,15 +229,15 @@
     BOOL hasInsets = [self transformValuesToUIEdgeInsets:&insets];
 
     NSString *imageName = [self valueOfTokenType:CASTokenTypeString] ?: [self valueOfTokenType:CASTokenTypeRef];
-    
+
     UIImage *imageValue = nil;
     NSRange schemeRange = [imageName rangeOfString:@"://"];
     if(schemeRange.location != NSNotFound) {
-        
+
         // We are a file path instead
         NSString *scheme = [imageName substringToIndex:schemeRange.location];
         NSString *path = [imageName substringFromIndex:NSMaxRange(schemeRange)];
-        
+
         // Checking if we're fetching from one of our built in
         // document uris
         NSSearchPathDirectory searchMask = 0;
@@ -236,7 +248,7 @@
         } else if([scheme isEqualToString:@"appsupport"]) {
             searchMask = NSApplicationSupportDirectory;
         }
-        
+
         if(searchMask != 0) {
             // If we found a search mask, then use that
             NSArray *paths = NSSearchPathForDirectoriesInDomains(searchMask, NSUserDomainMask, YES);
@@ -246,13 +258,13 @@
             // Otherwise load from imageNamed as per norm
             imageValue = [UIImage imageNamed:path];
         }
-        
+
     } else {
         // We're just an old boring image name
         imageValue = [UIImage imageNamed:imageName];
     }
-    
-    
+
+
     if (hasInsets) {
         imageValue = [imageValue resizableImageWithCapInsets:insets];
     }
@@ -263,9 +275,10 @@
     return NO;
 }
 
-- (BOOL)transformValuesToUIFont:(UIFont **)font {
-    NSNumber *fontSize = [self valueOfTokenType:CASTokenTypeUnit];
-    NSString *fontName = [self valueOfTokenType:CASTokenTypeString]
+- (BOOL)transformValuesToUIFont:(UIFont **)font
+{
+    NSNumber * fontSize = [self valueOfTokenType:CASTokenTypeUnit];
+    NSString * fontName = [self valueOfTokenType:CASTokenTypeString]
             ?: [self valueOfTokenType:CASTokenTypeRef]
                     ?: [self valueOfTokenType:CASTokenTypeSelector];
 
@@ -287,7 +300,23 @@
         };
     }
 
+    static NSDictionary *textWeightLookupMap = nil;
+    if (self.hasFontWeightSupport && !textWeightLookupMap) {
+        textWeightLookupMap = @{
+                @"ultralight" : @(UIFontWeightUltraLight),
+                @"thin" : @(UIFontWeightThin),
+                @"light" : @(UIFontWeightLight),
+                @"regular" : @(UIFontWeightRegular),
+                @"semibold" : @(self.isIOS9 ? UIFontWeightSemibold : UIFontWeightMedium),
+                @"bold" : @(UIFontWeightBold),
+                @"heavy" : @(UIFontWeightHeavy),
+                @"black" : @(UIFontWeightBlack)
+        };
+    }
+
     NSString *textStyle = textStyleLookupMap[fontName];
+    NSNumber *weightValue = textWeightLookupMap[fontName];
+
     if (textStyle && !fontSize) {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnavailableInDeploymentTarget"
@@ -297,6 +326,11 @@
             return NO;
         }
 #pragma clang diagnostic pop
+    }
+    if (weightValue && fontSize) {
+        CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
+        CGFloat weight = [weightValue floatValue];
+        *font =  [UIFont systemFontOfSize:fontSizeValue weight:weight];
     } else {
         CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
         if (fontName) {
