@@ -142,7 +142,9 @@ NSInteger const CASParseErrorFileContents = 2;
 
             //combine all following tokens until newline | ;
             NSMutableArray *fileNameComponents = NSMutableArray.new;
-            while (self.peekToken.type != CASTokenTypeNewline && self.peekToken.type != CASTokenTypeSemiColon) {
+            while (self.peekToken.type != CASTokenTypeNewline &&
+                   self.peekToken.type != CASTokenTypeSemiColon &&
+                   self.peekToken.type != CASTokenTypeEOS) {
                 [fileNameComponents addObject:self.nextToken.stringValue];
             }
 
@@ -640,8 +642,8 @@ NSInteger const CASParseErrorFileContents = 2;
                 styleSelector.styleClass = [tokenValue substringFromIndex:1];
             } else {
                 styleSelector.objectClass = NSClassFromString(tokenValue);
-                if (!styleSelector.objectClass) {
-                     // Maybe it's a custom Swift class
+				if (!styleSelector.objectClass) {
+                     // <<Maybe it's a custom Swift class
                     styleSelector.objectClass = [self swiftClassFromString:tokenValue];
                 }
             }
@@ -775,11 +777,10 @@ NSInteger const CASParseErrorFileContents = 2;
     return nil;
 }
 
-
 - (Class)swiftClassFromString:(NSString *)className {
-    NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-    NSString *classStringName = [NSString stringWithFormat:@"_TtC%d%@%d%@", appName.length, appName, className.length, className];
-    return NSClassFromString(classStringName);
+	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+	NSString *classStringName = [NSString stringWithFormat:@"_TtC%lu%@%lu%@", (unsigned long)appName.length, appName, (unsigned long)className.length, className];
+	return NSClassFromString(classStringName);
 }
 
 @end

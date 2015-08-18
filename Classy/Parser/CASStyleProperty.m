@@ -266,32 +266,44 @@
 - (BOOL)transformValuesToUIFont:(UIFont **)font {
     NSNumber *fontSize = [self valueOfTokenType:CASTokenTypeUnit];
     NSString *fontName = [self valueOfTokenType:CASTokenTypeString]
-        ?: [self valueOfTokenType:CASTokenTypeRef]
-        ?: [self valueOfTokenType:CASTokenTypeSelector];
+            ?: [self valueOfTokenType:CASTokenTypeRef]
+                    ?: [self valueOfTokenType:CASTokenTypeSelector];
 
     if (!fontSize && !fontName.length) {
         return NO;
     }
 
-    CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
-    if (fontName) {
-        if ([fontName isEqualToString:@"UIFontTextStyleHeadline"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-        } else if ([fontName isEqualToString:@"UIFontTextStyleSubheadline"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-        } else if ([fontName isEqualToString:@"UIFontTextStyleBody"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-        } else if ([fontName isEqualToString:@"UIFontTextStyleFootnote"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-        } else if ([fontName isEqualToString:@"UIFontTextStyleCaption1"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-        } else if ([fontName isEqualToString:@"UIFontTextStyleCaption2"]) {
-            *font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+    static NSDictionary *textStyleLookupMap = nil;
+    if (!textStyleLookupMap) {
+        // Classy is available also on iOS6, so instead of using UIKit consts for text styles that are available
+        // only on iOS7+ let the strings be hardcoded. This avoids the need for weak-linking UIKit.
+        textStyleLookupMap = @{
+                @"body" : @"UICTFontTextStyleBody",
+                @"caption1" : @"UICTFontTextStyleCaption1",
+                @"caption2" : @"UICTFontTextStyleCaption2",
+                @"footnote" : @"UICTFontTextStyleFootnote",
+                @"headline" : @"UICTFontTextStyleHeadline",
+                @"subheadline" : @"UICTFontTextStyleSubhead",
+        };
+    }
+
+    NSString *textStyle = textStyleLookupMap[fontName];
+    if (textStyle && !fontSize) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnavailableInDeploymentTarget"
+        if ([UIFont respondsToSelector:@selector(preferredFontForTextStyle:)]) {
+            *font = [UIFont preferredFontForTextStyle:textStyle];
         } else {
-            *font = [UIFont fontWithName:fontName size:fontSizeValue];
+            return NO;
         }
+#pragma clang diagnostic pop
     } else {
-        *font = [UIFont systemFontOfSize:fontSizeValue];
+        CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
+        if (fontName) {
+            *font = [UIFont fontWithName:fontName size:fontSizeValue];
+        } else {
+            *font = [UIFont systemFontOfSize:fontSizeValue];
+        }
     }
     return YES;
 }
