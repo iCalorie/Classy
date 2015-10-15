@@ -553,6 +553,7 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     // SUButton
     objectClassDescriptor = [self objectClassDescriptorForClass:NSClassFromString(@"SUButton")];
     [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBackgroundColor:forState:) forPropertyKey:@"backgroundColor"];
+    [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBorderColor:forState:) forPropertyKey:@"borderColor"];
 
     // UIBarButtonItem
     objectClassDescriptor = [self objectClassDescriptorForClass:UIBarButtonItem.class];
