@@ -23,6 +23,8 @@ NSInteger const CASParseErrorFileContents = 2;
 
 @property (nonatomic, strong) CASLexer *lexer;
 @property (nonatomic, strong, readwrite) NSArray *styleNodes;
+@property(nonatomic, strong, readonly) NSArray *embeddedFrameworks;
+@property(nonatomic, strong, readonly) NSString *executableName;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, copy) NSString *filePath;
 
@@ -96,6 +98,27 @@ NSInteger const CASParseErrorFileContents = 2;
     }
 
     return parser;
+}
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _executableName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"];
+        NSString *bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
+        NSArray *bundleParts = [bundleIdentifier componentsSeparatedByString:@"."];
+        if (bundleParts == nil || bundleParts.count < 2) {
+            _embeddedFrameworks = [NSBundle allFrameworks];
+        } else {
+            NSString *bundleIdentifierGeneral = [NSString stringWithFormat:@"%@.%@", bundleParts[0], bundleParts[1]];
+
+            NSPredicate *filterPredicate = [NSPredicate predicateWithBlock:^BOOL(NSBundle *bundle, NSDictionary *bindings) {
+                return [bundle.bundleIdentifier hasPrefix:bundleIdentifierGeneral];
+            }];
+
+            _embeddedFrameworks = [[NSBundle allFrameworks] filteredArrayUsingPredicate:filterPredicate];
+        }
+    }
+
+    return self;
 }
 
 - (NSError *)error {
@@ -770,7 +793,7 @@ NSInteger const CASParseErrorFileContents = 2;
         }
         CASStyleProperty *styleProperty = [[CASStyleProperty alloc] initWithNameToken:nameToken valueTokens:valueTokens];
         styleProperty.arguments = [arguments copy];
-        *isParent = hasChildren;
+        *isParent = hasChildren; 
         return styleProperty;
     }
 
@@ -778,9 +801,29 @@ NSInteger const CASParseErrorFileContents = 2;
 }
 
 - (Class)swiftClassFromString:(NSString *)className {
-	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"];
-	NSString *classStringName = [NSString stringWithFormat:@"_TtC%lu%@%lu%@", (unsigned long)appName.length, appName, (unsigned long)className.length, className];
-	return NSClassFromString(classStringName);
+    static NSString *swiftClassFormat = @"_TtC%lu%@%lu%@";
+	NSString *classStringName = [NSString stringWithFormat:swiftClassFormat,
+                    (unsigned long)self.executableName.length, self.executableName,
+                    (unsigned long)className.length, className];
+    
+    Class retVal = NSClassFromString(classStringName);
+    if (retVal == nil) {
+        // Try All the other bundles
+        for (NSBundle *bundle in self.embeddedFrameworks) {
+            NSString *frameworkName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];
+            classStringName = [NSString stringWithFormat:swiftClassFormat,
+                            (unsigned long)frameworkName.length, frameworkName,
+                            (unsigned long)className.length, className];
+
+            retVal = NSClassFromString(classStringName);
+
+            if (retVal != nil) {
+                break;
+            }
+        }
+    }
+
+	return retVal;
 }
 
 @end
