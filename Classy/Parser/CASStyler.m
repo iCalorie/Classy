@@ -42,6 +42,7 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     return result;
 }
 
+
 @interface CASStyler ()
 
 @property (nonatomic, strong) NSMutableArray *styleNodes;
@@ -142,18 +143,52 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     self.styleClassIndex = [NSMutableDictionary new];
     self.objectClassIndex = [NSMutableDictionary new];
     
-    CASParser *parser = [CASParser parserFromFilePath:filePath
-                                            variables:self.variables
-                                userDefinedClassNames:self.userDefinedClassNames
-                                                error:error];
+    NSArray *styleNodes = nil;
+    NSSet *importedFileNames = nil;
     
-    NSArray *styleNodes = parser.styleNodes;
-
-    if (!_styleVars) {
-        _styleVars = [NSMutableDictionary dictionary];
+    if ([self.cache respondsToSelector:@selector(cachedStyleNodesFromCASPath:withVariables:)]) {
+        styleNodes = [self.cache cachedStyleNodesFromCASPath:filePath withVariables:self.variables];
     }
+    
+    if (styleNodes != nil) {
+        importedFileNames = [NSSet set];
+        self.styleNodes = [NSMutableArray arrayWithArray:styleNodes];
+        
+        // TODO: set styleVars
+    }
+    else {
+        CASParser *parser = [CASParser parserFromFilePath:filePath
+                                                variables:self.variables
+                                    userDefinedClassNames:self.userDefinedClassNames
+                                                    error:error];
 
-    [_styleVars addEntriesFromDictionary:parser.styleVars];
+        styleNodes = parser.styleNodes;
+        importedFileNames = parser.importedFileNames;
+        
+        self.styleNodes = [self validNodes:styleNodes];
+        
+        // order ascending by precedence
+        [self.styleNodes sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(CASStyleNode *n1, CASStyleNode *n2) {
+            NSInteger precedence1 = [n1.styleSelector precedence];
+            NSInteger precedence2 = [n2.styleSelector precedence];
+            if (precedence2 > precedence1) {
+                return NSOrderedAscending;
+            } else if (precedence2 < precedence1) {
+                return NSOrderedDescending;
+            }
+            return NSOrderedSame;
+        }];
+        
+        if ([self.cache respondsToSelector:@selector(cacheStyleNodes:fromPath:variables:)]) {
+            [self.cache cacheStyleNodes:styleNodes fromPath:filePath variables:self.variables];
+        }
+        
+        if (!_styleVars) {
+            _styleVars = [NSMutableDictionary dictionary];
+        }
+        
+        [_styleVars addEntriesFromDictionary:parser.styleVars];
+    }
 
     if (self.watchFilePath) {
         for (dispatch_source_t source in self.fileWatchers) {
@@ -162,30 +197,15 @@ NSArray *ClassGetSubclasses(Class parentClass) {
         [self.fileWatchers removeAllObjects];
         [self reloadOnChangesToFilePath:self.watchFilePath];
         NSString *directoryPath = [self.watchFilePath stringByDeletingLastPathComponent];
-        for (NSString *fileName in parser.importedFileNames) {
+        for (NSString *fileName in importedFileNames) {
             NSString *resolvedPath = [directoryPath stringByAppendingPathComponent:fileName];
             [self reloadOnChangesToFilePath:resolvedPath];
         }
     }
     
-    
     if (!styleNodes.count) {
         return;
     }
-    
-    self.styleNodes = [self validNodes:styleNodes];
-    
-    // order ascending by precedence
-    [self.styleNodes sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(CASStyleNode *n1, CASStyleNode *n2) {
-        NSInteger precedence1 = [n1.styleSelector precedence];
-        NSInteger precedence2 = [n2.styleSelector precedence];
-        if (precedence2 > precedence1) {
-            return NSOrderedAscending;
-        } else if (precedence2 < precedence1) {
-            return NSOrderedDescending;
-        }
-        return NSOrderedSame;
-    }];
     
     [self populateStyleLookupTables:self.styleNodes];
     
