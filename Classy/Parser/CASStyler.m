@@ -551,7 +551,7 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     [objectClassDescriptor setArgumentDescriptors:@[imageArg, stateArg] setter:@selector(setImage:forState:) forPropertyKey:@"image"];
     
     // SUButton
-    objectClassDescriptor = [self objectClassDescriptorForClass:NSClassFromString(@"SUButton")];
+    objectClassDescriptor = [self objectClassDescriptorForClass:NSClassFromString(@"SnuppsUIFramework.SUButton")];
     [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBackgroundColor:forState:) forPropertyKey:@"backgroundColor"];
     [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBorderColor:forState:) forPropertyKey:@"borderColor"];
 
