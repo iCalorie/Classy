@@ -424,9 +424,9 @@ NSArray *ClassGetSubclasses(Class parentClass) {
 
     NSDictionary *barMetricsMap = @{
         @"default"                : @(UIBarMetricsDefault),
-        @"landscapePhone"        : @(UIBarMetricsLandscapePhone),
+        @"compact"        : @(UIBarMetricsCompact),
         @"defaultPrompt"         : @(UIBarMetricsDefaultPrompt),
-        @"landscapePhonePrompt" : @(UIBarMetricsLandscapePhonePrompt),
+        @"compactPrompt" : @(UIBarMetricsCompactPrompt),
     };
 
     NSDictionary *searchBarIconMap = @{
@@ -550,11 +550,6 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     
     [objectClassDescriptor setArgumentDescriptors:@[imageArg, stateArg] setter:@selector(setImage:forState:) forPropertyKey:@"image"];
     
-    // SUButton
-    objectClassDescriptor = [self objectClassDescriptorForClass:NSClassFromString(@"SnuppsUIFramework.SUButton")];
-    [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBackgroundColor:forState:) forPropertyKey:@"backgroundColor"];
-    [objectClassDescriptor setArgumentDescriptors:@[colorArg, stateArg] setter:@selector(setBorderColor:forState:) forPropertyKey:@"borderColor"];
-
     // UIBarButtonItem
     objectClassDescriptor = [self objectClassDescriptorForClass:UIBarButtonItem.class];
 
