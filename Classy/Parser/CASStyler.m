@@ -132,6 +132,10 @@ NSArray *ClassGetSubclasses(Class parentClass) {
 }
 
 - (void)setFilePath:(NSString *)filePath error:(NSError **)error {
+    if (!filePath) {
+        return;
+    }
+    
     if ([_filePath isEqualToString:filePath]) return;
     _filePath = filePath;
     
