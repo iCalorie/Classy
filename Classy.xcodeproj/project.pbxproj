@@ -81,6 +81,8 @@
 		1EC719F41B67AF9C00700A14 /* CASPropertyDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719AA1B67AF9C00700A14 /* CASPropertyDescriptor.m */; };
 		1EC719F51B67AF9C00700A14 /* CASRuntimeExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719AB1B67AF9C00700A14 /* CASRuntimeExtensions.h */; };
 		1EC719F61B67AF9C00700A14 /* CASRuntimeExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719AC1B67AF9C00700A14 /* CASRuntimeExtensions.m */; };
+		F39FCC201DAE7DF400D7CA5C /* UIImage+CASAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = F39FCC1E1DAE7DF400D7CA5C /* UIImage+CASAdditions.h */; };
+		F39FCC211DAE7DF400D7CA5C /* UIImage+CASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F39FCC1F1DAE7DF400D7CA5C /* UIImage+CASAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -160,6 +162,8 @@
 		1EC719AA1B67AF9C00700A14 /* CASPropertyDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASPropertyDescriptor.m; sourceTree = "<group>"; };
 		1EC719AB1B67AF9C00700A14 /* CASRuntimeExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CASRuntimeExtensions.h; sourceTree = "<group>"; };
 		1EC719AC1B67AF9C00700A14 /* CASRuntimeExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CASRuntimeExtensions.m; sourceTree = "<group>"; };
+		F39FCC1E1DAE7DF400D7CA5C /* UIImage+CASAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+CASAdditions.h"; sourceTree = "<group>"; };
+		F39FCC1F1DAE7DF400D7CA5C /* UIImage+CASAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+CASAdditions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -243,6 +247,8 @@
 				1EC7197C1B67AF9C00700A14 /* UIView+CASAdditions.m */,
 				1EC7197D1B67AF9C00700A14 /* UIViewController+CASAdditions.h */,
 				1EC7197E1B67AF9C00700A14 /* UIViewController+CASAdditions.m */,
+				F39FCC1E1DAE7DF400D7CA5C /* UIImage+CASAdditions.h */,
+				F39FCC1F1DAE7DF400D7CA5C /* UIImage+CASAdditions.m */,
 			);
 			name = Additions;
 			path = Classy/Additions;
@@ -325,6 +331,7 @@
 				1EC719BB1B67AF9C00700A14 /* UINavigationBar+CASAdditions.h in Headers */,
 				1EC719C11B67AF9C00700A14 /* UITabBar+CASAdditions.h in Headers */,
 				1EC719C91B67AF9C00700A14 /* UIViewController+CASAdditions.h in Headers */,
+				F39FCC201DAE7DF400D7CA5C /* UIImage+CASAdditions.h in Headers */,
 				1EC719B71B67AF9C00700A14 /* UIBarItem+CASAdditions.h in Headers */,
 				1EC719C31B67AF9C00700A14 /* UITextField+CASAdditions.h in Headers */,
 				1EC719C71B67AF9C00700A14 /* UIView+CASAdditions.h in Headers */,
@@ -470,6 +477,7 @@
 				1EC719AE1B67AF9C00700A14 /* CASStyleClassUtilities.m in Sources */,
 				1EC719D61B67AF9C00700A14 /* CASExpressionSolver.m in Sources */,
 				1EC719E41B67AF9C00700A14 /* CASStyler.m in Sources */,
+				F39FCC211DAE7DF400D7CA5C /* UIImage+CASAdditions.m in Sources */,
 				1EC719BC1B67AF9C00700A14 /* UINavigationBar+CASAdditions.m in Sources */,
 				1EC719C81B67AF9C00700A14 /* UIView+CASAdditions.m in Sources */,
 				1EC719B21B67AF9C00700A14 /* NSObject+CASSwizzle.m in Sources */,

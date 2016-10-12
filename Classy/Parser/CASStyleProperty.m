@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "CASStyleProperty.h"
 #import "NSString+CASAdditions.h"
+#import "UIImage+CASAdditions.h"
 #import "CASExpressionSolver.h"
 
 @interface CASStyleProperty ()
@@ -226,8 +227,11 @@
 
 - (BOOL)transformValuesToUIImage:(UIImage **)image {
     UIEdgeInsets insets;
+    UIColor *tintColor = nil;
+    
     BOOL hasInsets = [self transformValuesToUIEdgeInsets:&insets];
-
+    BOOL hasTintColor = [self transformValuesToUIColor:&tintColor];
+    
     NSString *imageName = [self valueOfTokenType:CASTokenTypeString] ?: [self valueOfTokenType:CASTokenTypeRef];
 
     UIImage *imageValue = nil;
@@ -264,7 +268,10 @@
         imageValue = [UIImage imageNamed:imageName];
     }
 
-
+    if (hasTintColor && tintColor) {
+        imageValue = [imageValue tintedWithColor:tintColor];
+    }
+    
     if (hasInsets) {
         imageValue = [imageValue resizableImageWithCapInsets:insets];
     }
