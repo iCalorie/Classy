@@ -10,7 +10,29 @@
 #import "CASObjectClassDescriptor.h"
 #import "CASStyleableItem.h"
 
+@class CASStyleNode;
+
+/**
+ * Protocol caching the @c CASStyleNode's. Adds the possibility to cache the in-memory representation of Classy's CAS 
+ * file, since parsing the file is slower than loading cached version.
+ */
+@protocol CASCacheProtocol <NSObject>
+@optional
+/**
+ *  Loads cached version of stylesheet located at @c path with @c variables
+ */
+- (NSArray <CASStyleNode *> *)cachedStyleNodesFromCASPath:(NSString *)path withVariables:(NSDictionary *)variables;
+
+/**
+ * Stores the stylesheet in-memory representation loaded from @c path with @c variables
+ */
+- (void)cacheStyleNodes:(NSArray <CASStyleNode *> *)styleNodes fromPath:(NSString *)path variables:(NSDictionary *)variables;
+@end
+
+
 @interface CASStyler : NSObject
+
++ (void)bootstrapClassyWithTargetWindows:(NSArray *)targetWindows;
 
 /**
  *  Singleton instance
@@ -21,6 +43,9 @@
 *  Presenting all the styleVars to be used in code.
 */
 @property(nonatomic, strong, readonly) NSMutableDictionary *styleVars;
+
+
+@property (nonatomic, weak) id<CASCacheProtocol> cache;
 
 @property (nonatomic, copy) NSDictionary *variables;
 
@@ -34,6 +59,12 @@
  *  Only use for debugging on simulator
  */
 @property (nonatomic, copy) NSString *watchFilePath;
+
+/**
+ *  Windows to update views. 
+ *  Needed for live updates when UIApplication is not available (e.g. in Application Extensions)
+ */
+@property (nonatomic, strong) NSArray *targetWindows;
 
 /**
  *  Set file path location of styling data and report any errors
