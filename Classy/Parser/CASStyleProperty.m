@@ -21,7 +21,6 @@
 @property (nonatomic, strong, readwrite) NSArray *valueTokens;
 
 @property(nonatomic) BOOL hasFontWeightSupport;
-@property(nonatomic) BOOL isIOS9;
 @end
 
 @implementation CASStyleProperty {
@@ -38,13 +37,6 @@
     self.valueTokens = valueTokens;
 
     self.hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
-
-    NSProcessInfo *processInfo = [NSProcessInfo new];
-    NSOperatingSystemVersion version9;
-    version9.majorVersion = 9;
-    version9.minorVersion = 0;
-
-    self.isIOS9 = [processInfo isOperatingSystemAtLeastVersion:version9];
 
     return self;
 }
@@ -314,7 +306,7 @@
                 @"thin" : @(UIFontWeightThin),
                 @"light" : @(UIFontWeightLight),
                 @"regular" : @(UIFontWeightRegular),
-                @"semibold" : @(self.isIOS9 ? UIFontWeightSemibold : UIFontWeightMedium),
+                @"semibold" : @(UIFontWeightSemibold),
                 @"bold" : @(UIFontWeightBold),
                 @"heavy" : @(UIFontWeightHeavy),
                 @"black" : @(UIFontWeightBlack)
