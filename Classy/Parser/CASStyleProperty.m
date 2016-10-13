@@ -169,21 +169,42 @@
         *color = colorValue;
         return YES;
     }
-
+    
     NSString *value = [self valueOfTokenType:CASTokenTypeRef]
-            ?: [self valueOfTokenType:CASTokenTypeSelector]
-                    ?: [self valueOfTokenType:CASTokenTypeString];
-
+    ?: [self valueOfTokenType:CASTokenTypeSelector]
+    ?: [self valueOfTokenType:CASTokenTypeString];
+    
+    
+    CASToken *alphaToken = [self.valueTokens lastObject];
+    CGFloat alphaTokenValue = 1.0;
+    
+    BOOL hasAlphaToken = NO;
+    
+    if (alphaToken.type == CASTokenTypeUnit && alphaToken.value != nil) {
+        float floatValue = [alphaToken.value floatValue];
+        
+        if (floatValue < 1 && floatValue >= 0) {
+            hasAlphaToken = YES;
+            alphaTokenValue = floatValue;
+        }
+    }
+    
     if ([value isEqualToString:@"rgb"] || [value isEqualToString:@"rgba"] || [value isEqualToString:@"hsl"] || [value isEqualToString:@"hsla"]) {
         NSArray *unitTokens = [self consecutiveValuesOfTokenType:CASTokenTypeUnit];
+        
         CGFloat alpha = 1.0;
-
+        
         // invalid if you don't have 3 colors
         if(unitTokens.count < 3) {
             return NO;
         } else if(unitTokens.count == 4){
             alpha = [unitTokens[3] doubleValue];
         }
+        
+        if (hasAlphaToken) {
+            alpha = alphaTokenValue;
+        }
+        
         if( [value isEqualToString:@"rgb"] || [value isEqualToString:@"rgba"] ) {
             *color = [UIColor colorWithRed:[unitTokens[0] doubleValue]/255.0 green:[unitTokens[1] doubleValue]/255.0 blue:[unitTokens[2] doubleValue]/255.0 alpha:alpha];
         } else if ( [value isEqualToString:@"hsl"] || [value isEqualToString:@"hsla"] ) {
@@ -191,19 +212,25 @@
         }
         return YES;
     }
-
+    
     value = [value cas_stringByCamelCasing];
+    
     SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@Color", value]);
     if (selector && [UIColor.class respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        *color = [UIColor.class performSelector:selector];
+        
+        if (hasAlphaToken) {
+            *color = [[UIColor.class performSelector:selector] colorWithAlphaComponent:alphaTokenValue];
+        } else {
+            *color = [UIColor.class performSelector:selector];
+        }
+        
 #pragma clang diagnostic pop
         return YES;
     }
-
-    return NO;
-}
+    
+    return NO;}
 
 - (BOOL)transformValuesToNSString:(NSString **)string {
     NSString *value = [self valueOfTokenType:CASTokenTypeString]
