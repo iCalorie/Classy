@@ -317,12 +317,16 @@
         // Classy is available also on iOS6, so instead of using UIKit consts for text styles that are available
         // only on iOS7+ let the strings be hardcoded. This avoids the need for weak-linking UIKit.
         textStyleLookupMap = @{
-                @"body" : @"UICTFontTextStyleBody",
-                @"caption1" : @"UICTFontTextStyleCaption1",
-                @"caption2" : @"UICTFontTextStyleCaption2",
-                @"footnote" : @"UICTFontTextStyleFootnote",
-                @"headline" : @"UICTFontTextStyleHeadline",
-                @"subheadline" : @"UICTFontTextStyleSubhead",
+               @"title1" : @"UICTFontTextStyleTitle1",
+               @"title2" : @"UICTFontTextStyleTitle2",
+               @"title3" : @"UICTFontTextStyleTitle3",
+               @"headline" : @"UICTFontTextStyleHeadline",
+               @"body" : @"UICTFontTextStyleBody",
+               @"callout" : @"UICTFontTextStyleCallout",
+               @"subhead" : @"UICTFontTextStyleSubhead",
+               @"footnote" : @"UICTFontTextStyleFootnote",
+               @"caption1" : @"UICTFontTextStyleCaption1",
+               @"caption2" : @"UICTFontTextStyleCaption2",
         };
     }
 
