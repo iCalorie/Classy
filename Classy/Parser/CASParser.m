@@ -28,13 +28,15 @@ NSInteger const CASParseErrorFileContents = 2;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, copy) NSString *filePath;
 
+@property (nonatomic, strong) NSDictionary *userDefinedClassNames;
+
 @end
 
 @implementation CASParser {
     NSMutableSet *_importedFileNames;
 }
 
-+ (CASParser *)parserFromFilePath:(NSString *)filePath variables:(NSDictionary *)variables error:(NSError **)error {
++ (CASParser *)parserFromFilePath:(NSString *)filePath variables:(NSDictionary *)variables userDefinedClassNames:(NSDictionary *)userDefinedClassNames error:(NSError **)error {
     NSError *fileError = nil;
     NSString *contents = [NSString stringWithContentsOfFile:filePath
                                                    encoding:NSUTF8StringEncoding
@@ -60,6 +62,7 @@ NSInteger const CASParseErrorFileContents = 2;
     CASLog(@"Start parsing file \n%@", filePath);
     NSError *parseError = nil;
     CASParser *parser = CASParser.new;
+    parser.userDefinedClassNames = userDefinedClassNames;
     parser.filePath = filePath;
     parser.styleVars = NSMutableDictionary.new;
 
@@ -194,7 +197,10 @@ NSInteger const CASParseErrorFileContents = 2;
             [_importedFileNames addObject:fileName];
             NSString *filePath = [[self.filePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:fileName];
             NSError *importError = nil;
-            CASParser *parser = [CASParser parserFromFilePath:filePath variables:self.styleVars error:&importError];
+            CASParser *parser = [CASParser parserFromFilePath:filePath
+                                                    variables:self.styleVars
+                                        userDefinedClassNames:self.userDefinedClassNames
+                                                        error:&importError];
             if (importError) {
                 if (error) {
                     *error = importError;
@@ -801,29 +807,39 @@ NSInteger const CASParseErrorFileContents = 2;
 }
 
 - (Class)swiftClassFromString:(NSString *)className {
+    NSString *swiftClassName = [NSString stringWithFormat:@"%@.%@", self.executableName, className];
+    
+    if (self.userDefinedClassNames && self.userDefinedClassNames[swiftClassName]) {
+        return self.userDefinedClassNames[swiftClassName];
+    }
+    
     static NSString *swiftClassFormat = @"_TtC%lu%@%lu%@";
-	NSString *classStringName = [NSString stringWithFormat:swiftClassFormat,
-                    (unsigned long)self.executableName.length, self.executableName,
-                    (unsigned long)className.length, className];
+    NSString *classStringName = [NSString stringWithFormat:swiftClassFormat,
+                                 (unsigned long)self.executableName.length, self.executableName,
+                                 (unsigned long)className.length, className];
     
     Class retVal = NSClassFromString(classStringName);
     if (retVal == nil) {
         // Try All the other bundles
         for (NSBundle *bundle in self.embeddedFrameworks) {
             NSString *frameworkName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];
+            
+            swiftClassName = [NSString stringWithFormat:@"%@.%@", frameworkName, className];
+            if (self.userDefinedClassNames && self.userDefinedClassNames[swiftClassName]) {
+                return self.userDefinedClassNames[swiftClassName];
+            }
             classStringName = [NSString stringWithFormat:swiftClassFormat,
-                            (unsigned long)frameworkName.length, frameworkName,
-                            (unsigned long)className.length, className];
-
+                               (unsigned long)frameworkName.length, frameworkName,
+                               (unsigned long)className.length, className];
+            
             retVal = NSClassFromString(classStringName);
-
+            
             if (retVal != nil) {
                 break;
             }
         }
     }
-
-	return retVal;
+    
+    return retVal;
 }
-
 @end
