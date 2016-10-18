@@ -248,11 +248,25 @@
     UIEdgeInsets insets;
     UIColor *tintColor = nil;
     
-    BOOL hasInsets = [self transformValuesToUIEdgeInsets:&insets];
-    BOOL hasTintColor = [self transformValuesToUIColor:&tintColor];
-    
     NSString *imageName = [self valueOfTokenType:CASTokenTypeString] ?: [self valueOfTokenType:CASTokenTypeRef];
-
+    
+    BOOL hasInsets = [self transformValuesToUIEdgeInsets:&insets];
+    
+    BOOL hasTintColor = NO;
+    
+    if (self.valueTokens.count > 1 && !hasInsets) {
+        // HACK to get the tintColor out.
+        NSMutableArray *colorTokens = [NSMutableArray arrayWithArray:self.valueTokens];
+        [colorTokens removeObjectAtIndex:0]; // Remove the image
+        
+        CASStyleProperty *styleProperty = [[CASStyleProperty alloc] initWithNameToken:self.nameToken valueTokens:colorTokens];
+        
+        [styleProperty transformValuesToUIColor:&tintColor];
+        
+        hasTintColor = tintColor != nil;
+        // HACK
+    }
+    
     UIImage *imageValue = nil;
     NSRange schemeRange = [imageName rangeOfString:@"://"];
     if(schemeRange.location != NSNotFound) {
