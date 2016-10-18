@@ -254,7 +254,7 @@
     
     BOOL hasTintColor = NO;
     
-    if (self.valueTokens.count > 1 && !hasInsets) {
+    if (self.valueTokens.count > 1) {
         // HACK to get the tintColor out.
         NSMutableArray *colorTokens = [NSMutableArray arrayWithArray:self.valueTokens];
         [colorTokens removeObjectAtIndex:0]; // Remove the image
