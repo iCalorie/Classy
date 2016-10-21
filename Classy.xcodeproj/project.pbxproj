@@ -65,7 +65,7 @@
 		1EC719E41B67AF9C00700A14 /* CASStyler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719991B67AF9C00700A14 /* CASStyler.m */; };
 		1EC719E51B67AF9C00700A14 /* CASTextAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC7199A1B67AF9C00700A14 /* CASTextAttributes.h */; };
 		1EC719E61B67AF9C00700A14 /* CASTextAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7199B1B67AF9C00700A14 /* CASTextAttributes.m */; };
-		1EC719E71B67AF9C00700A14 /* CASToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC7199C1B67AF9C00700A14 /* CASToken.h */; };
+		1EC719E71B67AF9C00700A14 /* CASToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC7199C1B67AF9C00700A14 /* CASToken.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC719E81B67AF9C00700A14 /* CASToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7199D1B67AF9C00700A14 /* CASToken.m */; };
 		1EC719E91B67AF9C00700A14 /* CASUnitToken.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC7199E1B67AF9C00700A14 /* CASUnitToken.h */; };
 		1EC719EA1B67AF9C00700A14 /* CASUnitToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7199F1B67AF9C00700A14 /* CASUnitToken.m */; };
