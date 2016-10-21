@@ -53,11 +53,11 @@
 		1EC719D81B67AF9C00700A14 /* CASInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7198D1B67AF9C00700A14 /* CASInvocation.m */; };
 		1EC719D91B67AF9C00700A14 /* CASLexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC7198E1B67AF9C00700A14 /* CASLexer.h */; };
 		1EC719DA1B67AF9C00700A14 /* CASLexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC7198F1B67AF9C00700A14 /* CASLexer.m */; };
-		1EC719DB1B67AF9C00700A14 /* CASParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719901B67AF9C00700A14 /* CASParser.h */; };
+		1EC719DB1B67AF9C00700A14 /* CASParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719901B67AF9C00700A14 /* CASParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC719DC1B67AF9C00700A14 /* CASParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719911B67AF9C00700A14 /* CASParser.m */; };
 		1EC719DD1B67AF9C00700A14 /* CASStyleNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719921B67AF9C00700A14 /* CASStyleNode.h */; };
 		1EC719DE1B67AF9C00700A14 /* CASStyleNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719931B67AF9C00700A14 /* CASStyleNode.m */; };
-		1EC719DF1B67AF9C00700A14 /* CASStyleProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719941B67AF9C00700A14 /* CASStyleProperty.h */; };
+		1EC719DF1B67AF9C00700A14 /* CASStyleProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719941B67AF9C00700A14 /* CASStyleProperty.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1EC719E01B67AF9C00700A14 /* CASStyleProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719951B67AF9C00700A14 /* CASStyleProperty.m */; };
 		1EC719E11B67AF9C00700A14 /* CASStyleSelector.h in Headers */ = {isa = PBXBuildFile; fileRef = 1EC719961B67AF9C00700A14 /* CASStyleSelector.h */; };
 		1EC719E21B67AF9C00700A14 /* CASStyleSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EC719971B67AF9C00700A14 /* CASStyleSelector.m */; };

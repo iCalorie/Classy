@@ -14,6 +14,8 @@
 #import "CASObjectClassDescriptor.h"
 #import "CASArgumentDescriptor.h"
 #import "CASPropertyDescriptor.h"
+#import "CASStyleProperty.h"
+#import "CASToken.h"
 
 #import "UIColor+CASAdditions.h"
 #import "UITextField+CASAdditions.h"
