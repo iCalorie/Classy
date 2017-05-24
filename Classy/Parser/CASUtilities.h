@@ -9,11 +9,7 @@
 #import <Foundation/Foundation.h>
 
 // Logging
-#ifdef DEBUG
-#   define CASLog(fmt, ...) NSLog((@"[Classy] %s " fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__);
-#else
-#   define CASLog(...)
-#endif
+#define CASLog(fmt, ...) NSLog((@"[Classy] %s " fmt), __PRETTY_FUNCTION__, ##__VA_ARGS__);
 
 // Keypath compile check
 #define cas_propertykey(classname, property) \
