@@ -16,6 +16,12 @@
 #import "CASPropertyDescriptor.h"
 #import "CASStyleProperty.h"
 #import "CASToken.h"
+#import "CASStyleSelector.h"
+#import "CASStyleNode.h"
+#import "CASDeviceSelector.h"
+#import "CASDeviceTypeItem.h"
+#import "CASDeviceSelectorItem.h"
+#import "CASDeviceOSVersionItem.h"
 
 #import "UIColor+CASAdditions.h"
 #import "UITextField+CASAdditions.h"
