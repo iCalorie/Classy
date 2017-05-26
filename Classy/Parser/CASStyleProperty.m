@@ -20,7 +20,7 @@
 @property (nonatomic, strong, readwrite) CASToken *nameToken;
 @property (nonatomic, strong, readwrite) NSArray *valueTokens;
 
-@property(nonatomic) BOOL hasFontWeightSupport;
+@property(nonatomic, readonly) BOOL hasFontWeightSupport;
 @end
 
 @implementation CASStyleProperty {
@@ -36,7 +36,7 @@
     self.nameToken = nameToken;
     self.valueTokens = valueTokens;
 
-    self.hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
+    _hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
 
     return self;
 }
@@ -420,6 +420,7 @@
         self.valueTokens = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(valueTokens))];
         _childStyleProperties = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(childStyleProperties))];
         self.arguments = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(arguments))];
+        _hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
     }
     return self;
 }
