@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "CASStyler.h"
+#import "CASStyle.h"
 #import "CASStyleableItem.h"
 #import "CASUtilities.h"
 #import "CASObjectClassDescriptor.h"

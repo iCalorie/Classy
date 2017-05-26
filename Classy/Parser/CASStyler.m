@@ -13,6 +13,7 @@
 #import "UITextField+CASAdditions.h"
 #import "CASUtilities.h"
 #import "CASStyleNode.h"
+#import "CASStyle.h"
 #import "NSString+CASAdditions.h"
 #import "CASTextAttributes.h"
 #import "CASInvocation.h"
@@ -45,7 +46,6 @@ NSArray *ClassGetSubclasses(Class parentClass) {
 
 @interface CASStyler ()
 
-@property (nonatomic, strong) NSMutableArray *styleNodes;
 @property (nonatomic, strong) NSMapTable *objectClassDescriptorCache;
 @property (nonatomic, strong) NSHashTable *scheduledItems;
 @property (nonatomic, strong) NSTimer *updateTimer;
@@ -143,31 +143,28 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     self.styleClassIndex = [NSMutableDictionary new];
     self.objectClassIndex = [NSMutableDictionary new];
     
-    NSArray *styleNodes = nil;
+    CASStyle *style = nil;
     NSSet *importedFileNames = nil;
     
-    if ([self.cache respondsToSelector:@selector(cachedStyleNodesFromCASPath:withVariables:)]) {
-        styleNodes = [self.cache cachedStyleNodesFromCASPath:filePath withVariables:self.variables];
+    if ([self.cache respondsToSelector:@selector(cachedStyleWithVariables:)]) {
+        style = [self.cache cachedStyleWithVariables:self.variables];
     }
     
-    if (styleNodes != nil) {
+    if (style != nil) {
         importedFileNames = [NSSet set];
-        self.styleNodes = [NSMutableArray arrayWithArray:styleNodes];
-        
-        // TODO: set styleVars
+        _style = style;
     }
     else {
         CASParser *parser = [CASParser parserFromFilePath:filePath
                                                 variables:self.variables
                                                     error:error];
 
-        styleNodes = parser.styleNodes;
         importedFileNames = parser.importedFileNames;
         
-        self.styleNodes = [self validNodes:styleNodes];
+        NSMutableArray *styleNodes = [self validNodes:parser.styleNodes];
         
         // order ascending by precedence
-        [self.styleNodes sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(CASStyleNode *n1, CASStyleNode *n2) {
+        [styleNodes sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(CASStyleNode *n1, CASStyleNode *n2) {
             NSInteger precedence1 = [n1.styleSelector precedence];
             NSInteger precedence2 = [n2.styleSelector precedence];
             if (precedence2 > precedence1) {
@@ -178,15 +175,11 @@ NSArray *ClassGetSubclasses(Class parentClass) {
             return NSOrderedSame;
         }];
         
-        if ([self.cache respondsToSelector:@selector(cacheStyleNodes:fromPath:variables:)]) {
-            [self.cache cacheStyleNodes:styleNodes fromPath:filePath variables:self.variables];
+        _style = [[CASStyle alloc] initWithStyleNodes:styleNodes styleVars:parser.styleVars];
+
+        if ([self.cache respondsToSelector:@selector(cacheStyle:variables:)]) {
+            [self.cache cacheStyle:self.style variables:self.variables];
         }
-        
-        if (!_styleVars) {
-            _styleVars = [NSMutableDictionary dictionary];
-        }
-        
-        [_styleVars addEntriesFromDictionary:parser.styleVars];
     }
 
     if (self.watchFilePath) {
@@ -202,15 +195,15 @@ NSArray *ClassGetSubclasses(Class parentClass) {
         }
     }
     
-    if (!styleNodes.count) {
+    if (!self.style.styleNodes.count) {
         return;
     }
     
-    [self populateStyleLookupTables:self.styleNodes];
+    [self populateStyleLookupTables:self.style.styleNodes];
     
     self.invocationObjectArguments = NSMutableArray.new;
     // precompute values
-    for (CASStyleNode *styleNode in self.styleNodes) {
+    for (CASStyleNode *styleNode in self.style.styleNodes) {
         NSMutableArray *invocations = NSMutableArray.new;
         for (CASStyleProperty *styleProperty in styleNode.styleProperties) {
             // TODO type checking and throw errors

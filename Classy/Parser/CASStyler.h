@@ -10,7 +10,7 @@
 #import "CASObjectClassDescriptor.h"
 #import "CASStyleableItem.h"
 
-@class CASStyleNode;
+@class CASStyle;
 
 /**
  * Protocol caching the @c CASStyleNode's. Adds the possibility to cache the in-memory representation of Classy's CAS 
@@ -19,14 +19,14 @@
 @protocol CASCacheProtocol <NSObject>
 @optional
 /**
- *  Loads cached version of stylesheet located at @c path with @c variables
+ *  Loads cached version of stylesheet with @c variables
  */
-- (NSArray <CASStyleNode *> *)cachedStyleNodesFromCASPath:(NSString *)path withVariables:(NSDictionary *)variables;
+- (CASStyle *)cachedStyleWithVariables:(NSDictionary *)variables;
 
 /**
- * Stores the stylesheet in-memory representation loaded from @c path with @c variables
+ * Stores the stylesheet in-memory representation with @c variables
  */
-- (void)cacheStyleNodes:(NSArray <CASStyleNode *> *)styleNodes fromPath:(NSString *)path variables:(NSDictionary *)variables;
+- (void)cacheStyle:(CASStyle *)style variables:(NSDictionary *)variables;
 @end
 
 
@@ -40,7 +40,7 @@
 /**
 *  Presenting all the styleVars to be used in code.
 */
-@property(nonatomic, strong, readonly) NSMutableDictionary *styleVars;
+@property(nonatomic, strong, readonly) CASStyle *style;
 
 @property (nonatomic, weak) id<CASCacheProtocol> cache;
 
