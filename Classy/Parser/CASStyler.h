@@ -42,11 +42,6 @@
 */
 @property(nonatomic, strong, readonly) NSMutableDictionary *styleVars;
 
-/**
- * For classes that cannot be detected by Classy. <String, Class>
- */
-@property (nonatomic, strong) NSMutableDictionary *userDefinedClassNames;
-
 @property (nonatomic, weak) id<CASCacheProtocol> cache;
 
 @property (nonatomic, copy) NSDictionary *variables;

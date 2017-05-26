@@ -159,7 +159,6 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     else {
         CASParser *parser = [CASParser parserFromFilePath:filePath
                                                 variables:self.variables
-                                    userDefinedClassNames:self.userDefinedClassNames
                                                     error:error];
 
         styleNodes = parser.styleNodes;
