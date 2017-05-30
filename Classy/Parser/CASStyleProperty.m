@@ -19,8 +19,6 @@
 
 @property (nonatomic, strong, readwrite) CASToken *nameToken;
 @property (nonatomic, strong, readwrite) NSArray *valueTokens;
-
-@property(nonatomic, readonly) BOOL hasFontWeightSupport;
 @end
 
 @implementation CASStyleProperty {
@@ -35,8 +33,6 @@
 
     self.nameToken = nameToken;
     self.valueTokens = valueTokens;
-
-    _hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
 
     return self;
 }
@@ -328,24 +324,22 @@
 
     static NSDictionary *textStyleLookupMap = nil;
     if (!textStyleLookupMap) {
-        // Classy is available also on iOS6, so instead of using UIKit consts for text styles that are available
-        // only on iOS7+ let the strings be hardcoded. This avoids the need for weak-linking UIKit.
         textStyleLookupMap = @{
-               @"title1" : @"UICTFontTextStyleTitle1",
-               @"title2" : @"UICTFontTextStyleTitle2",
-               @"title3" : @"UICTFontTextStyleTitle3",
-               @"headline" : @"UICTFontTextStyleHeadline",
-               @"body" : @"UICTFontTextStyleBody",
-               @"callout" : @"UICTFontTextStyleCallout",
-               @"subhead" : @"UICTFontTextStyleSubhead",
-               @"footnote" : @"UICTFontTextStyleFootnote",
-               @"caption1" : @"UICTFontTextStyleCaption1",
-               @"caption2" : @"UICTFontTextStyleCaption2",
+               @"title1" : UIFontTextStyleTitle1,
+               @"title2" : UIFontTextStyleTitle2,
+               @"title3" : UIFontTextStyleTitle3,
+               @"headline" : UIFontTextStyleHeadline,
+               @"body" : UIFontTextStyleBody,
+               @"callout" : UIFontTextStyleCallout,
+               @"subhead" : UIFontTextStyleSubheadline,
+               @"footnote" : UIFontTextStyleFootnote,
+               @"caption1" : UIFontTextStyleCaption1,
+               @"caption2" : UIFontTextStyleCaption2,
         };
     }
 
     static NSDictionary *textWeightLookupMap = nil;
-    if (self.hasFontWeightSupport && !textWeightLookupMap) {
+    if (!textWeightLookupMap) {
         textWeightLookupMap = @{
                 @"ultralight" : @(UIFontWeightUltraLight),
                 @"thin" : @(UIFontWeightThin),
@@ -362,14 +356,7 @@
     NSNumber *weightValue = textWeightLookupMap[fontName];
 
     if (textStyle && !fontSize) {
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnavailableInDeploymentTarget"
-        if ([UIFont respondsToSelector:@selector(preferredFontForTextStyle:)]) {
-            *font = [UIFont preferredFontForTextStyle:textStyle];
-        } else {
-            return NO;
-        }
-#pragma clang diagnostic pop
+        *font = [UIFont preferredFontForTextStyle:textStyle];
     }
     if (weightValue && fontSize) {
         CGFloat fontSizeValue = [fontSize floatValue] ?: [UIFont systemFontSize];
@@ -420,7 +407,6 @@
         self.valueTokens = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(valueTokens))];
         _childStyleProperties = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(childStyleProperties))];
         self.arguments = [aDecoder decodeObjectForKey:NSStringFromSelector(@selector(arguments))];
-        _hasFontWeightSupport = [UIFont respondsToSelector:@selector(systemFontOfSize:weight:)];
     }
     return self;
 }
