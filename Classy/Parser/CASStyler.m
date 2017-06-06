@@ -157,6 +157,7 @@ NSArray *ClassGetSubclasses(Class parentClass) {
     else {
         CASParser *parser = [CASParser parserFromFilePath:filePath
                                                 variables:self.variables
+                                      swiftFrameworkNames:self.swiftFrameworkNames
                                                     error:error];
 
         importedFileNames = parser.importedFileNames;

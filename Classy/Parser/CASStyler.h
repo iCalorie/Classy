@@ -44,6 +44,7 @@
 
 @property (nonatomic, weak) id<CASCacheProtocol> cache;
 
+@property (nonatomic, strong) NSArray<NSString *> *swiftFrameworkNames;
 @property (nonatomic, copy) NSDictionary *variables;
 
 /**

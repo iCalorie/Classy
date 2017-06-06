@@ -23,7 +23,7 @@ NSInteger const CASParseErrorFileContents = 2;
 
 @property (nonatomic, strong) CASLexer *lexer;
 @property (nonatomic, strong, readwrite) NSArray *styleNodes;
-@property(nonatomic, strong, readonly) NSArray *embeddedFrameworks;
+@property(nonatomic, strong) NSArray *swiftFrameworkNames;
 @property(nonatomic, strong, readonly) NSString *executableName;
 @property (nonatomic, strong) NSError *error;
 @property (nonatomic, copy) NSString *filePath;
@@ -34,7 +34,7 @@ NSInteger const CASParseErrorFileContents = 2;
     NSMutableSet *_importedFileNames;
 }
 
-+ (CASParser *)parserFromFilePath:(NSString *)filePath variables:(NSDictionary *)variables error:(NSError **)error {
++ (CASParser *)parserFromFilePath:(NSString *)filePath variables:(NSDictionary *)variables swiftFrameworkNames:(NSArray *)swiftFrameworkNames error:(NSError **)error {
     NSError *fileError = nil;
     NSString *contents = [NSString stringWithContentsOfFile:filePath
                                                    encoding:NSUTF8StringEncoding
@@ -60,6 +60,7 @@ NSInteger const CASParseErrorFileContents = 2;
     CASLog(@"Start parsing file \n%@", filePath);
     NSError *parseError = nil;
     CASParser *parser = CASParser.new;
+    parser.swiftFrameworkNames = swiftFrameworkNames;
     parser.filePath = filePath;
     parser.styleVars = NSMutableDictionary.new;
 
@@ -103,19 +104,6 @@ NSInteger const CASParseErrorFileContents = 2;
 - (instancetype)init {
     if (self = [super init]) {
         _executableName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleExecutable"];
-        NSString *bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
-        NSArray *bundleParts = [bundleIdentifier componentsSeparatedByString:@"."];
-        if (bundleParts == nil || bundleParts.count < 2) {
-            _embeddedFrameworks = [NSBundle allFrameworks];
-        } else {
-            NSString *bundleIdentifierGeneral = [NSString stringWithFormat:@"%@.%@", bundleParts[0], bundleParts[1]];
-
-            NSPredicate *filterPredicate = [NSPredicate predicateWithBlock:^BOOL(NSBundle *bundle, NSDictionary *bindings) {
-                return [bundle.bundleIdentifier hasPrefix:bundleIdentifierGeneral];
-            }];
-
-            _embeddedFrameworks = [[NSBundle allFrameworks] filteredArrayUsingPredicate:filterPredicate];
-        }
     }
 
     return self;
@@ -196,6 +184,7 @@ NSInteger const CASParseErrorFileContents = 2;
             NSError *importError = nil;
             CASParser *parser = [CASParser parserFromFilePath:filePath
                                                     variables:self.styleVars
+                                           swiftFrameworkNames:self.swiftFrameworkNames
                                                         error:&importError];
             if (importError) {
                 if (error) {
@@ -809,11 +798,8 @@ NSInteger const CASParseErrorFileContents = 2;
                                  (unsigned long)className.length, className];
     
     Class retVal = NSClassFromString(classStringName);
-    if (retVal == nil) {
-        // Try All the other bundles
-        for (NSBundle *bundle in self.embeddedFrameworks) {
-            NSString *frameworkName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];
-            
+    if (retVal == nil && self.swiftFrameworkNames && self.swiftFrameworkNames.count > 0) {
+        for (NSString *frameworkName in self.swiftFrameworkNames) {
             classStringName = [NSString stringWithFormat:swiftClassFormat,
                                (unsigned long)frameworkName.length, frameworkName,
                                (unsigned long)className.length, className];
