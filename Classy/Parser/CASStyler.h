@@ -42,6 +42,11 @@
 */
 @property(nonatomic, strong, readonly) CASStyle *style;
 
+/**
+ * For classes that cannot be detected by Classy. <String, Class>
+ */
+@property (nonatomic, strong) NSDictionary<NSString *, Class> *classMap;
+
 @property (nonatomic, weak) id<CASCacheProtocol> cache;
 
 @property (nonatomic, strong) NSArray<NSString *> *swiftFrameworkNames;
